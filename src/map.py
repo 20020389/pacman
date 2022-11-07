@@ -1,7 +1,7 @@
 import pygame
 
-import variables
-from spite import Spite
+import src.variables as variables
+from src.spite import Spite
 
 
 class Map:

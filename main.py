@@ -78,29 +78,22 @@ map1 = Map([[2, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 44, 43, 11, 
              45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 3],
             [6, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 5]])
 
-pacman = Pacman(200, 200)
+pacman = Pacman(10, 20)
 
 
 while running:
     pygame.time.wait(10)
-    screen.fill('#000000')
+    screen.fill((0, 0, 0))
     
 
     map1.draw(screen)
-    pacman.draw(screen)
+    pacman.draw(screen, map1.map)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                pacman.set_status('left')
-            if event.key == pygame.K_d:
-                pacman.set_status('right')
-            if event.key == pygame.K_w:
-                pacman.set_status('up')
-            if event.key == pygame.K_s:
-                pacman.set_status('down')
+            pacman.handle(event)
 
     pygame.display.update()
 

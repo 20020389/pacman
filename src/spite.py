@@ -1,6 +1,6 @@
 import pygame
 
-import variables
+import src.variables as variables
 
 image = pygame.image.load('assets/sprites.png')
 if image:
