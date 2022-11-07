@@ -1,3 +1,5 @@
+import os
+
 SCALE = 1.5
 FRAME_W = 16 * SCALE
 FRAME_H = 16 * SCALE
@@ -11,3 +13,5 @@ PACMAN_SPEED = 2
 
 # animate
 ANIMATE_SPEED = 10 # càng nhỏ hiệu ứng càng nhanh
+_DIRNAME = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.join(_DIRNAME, '..')

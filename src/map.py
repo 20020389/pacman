@@ -53,8 +53,8 @@ class Map:
 
 
 def load_map(name: str) -> Map:
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    map_path = os.path.join(ROOT_DIR, str.format("../assets/map/{}.txt", name))
+    
+    map_path = os.path.join(variables.ROOT_DIR, str.format("assets/map/{}.txt", name))
     file_data = open(map_path, 'r')
 
     map_hash: list[list[int]] = []
