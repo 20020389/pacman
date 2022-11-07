@@ -44,9 +44,14 @@ class Map:
         for i in range(len(map_data)):
             for j in range(len(map_data[i])):
                 index = map_data[i][j] - 1
-                screen.blit(Map.img, (Map.w * j, Map.h * i),
-                            Map.path[index].get())
-    
+                if index != -1:
+                    screen.blit(Map.img, (Map.w * j, Map.h * i),
+                                Map.path[index].get())
+                else:
+                    screen.blit(Map.img, (Map.w * j, Map.h * i),
+                                Map.path[44].get())
+
+
 def load_map(name: str) -> Map:
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     map_path = os.path.join(ROOT_DIR, str.format("../assets/map/{}.txt", name))
@@ -54,7 +59,7 @@ def load_map(name: str) -> Map:
 
     map_hash: list[list[int]] = []
     i = 0
-    
+
     for line in file_data:
         list_data = line.split(',')
         map_hash.append([])
