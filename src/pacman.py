@@ -133,6 +133,16 @@ class Pacman:
 
     # xử lý sự kiện
 
+    def eat(self, map_hash: list[list[int]]):
+        center_x = self.x + variables.FRAME_W / 2
+        center_y = self.y + variables.FRAME_H / 2
+
+        i = int(center_y / variables.FRAME_H)
+        j = int(center_x / variables.FRAME_W)
+
+        map_hash[i][j] = 45
+        pass
+
     def handle(self, event: pygame.event.Event):
         if event.key == pygame.K_a:
             if self.action == 'right':
@@ -192,6 +202,7 @@ class Pacman:
         if self.can_move(map_hash, (x, y)):
             self.x = int(x)
             self.y = int(y)
+            self.eat(map_hash)
 
         if self.same_frame():
             self.set_status(self.action)
