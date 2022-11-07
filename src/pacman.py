@@ -97,13 +97,29 @@ class Pacman:
     # xử lý sự kiện
     def handle(self, event: pygame.event.Event):
         if event.key == pygame.K_a:
-            self.action = 'left'
+            if self.action == 'right':
+                self.set_status('left')
+                self.action = 'left'
+            else:
+                self.action = 'left'
         if event.key == pygame.K_d:
-            self.action = 'right'
+            if self.action == 'left':
+                self.set_status('right')
+                self.action = 'right'
+            else:
+                self.action = 'right'
         if event.key == pygame.K_w:
-            self.action = 'up'
+            if self.action == 'down':
+                self.set_status('up')
+                self.action = 'up'
+            else:
+                self.action = 'up'
         if event.key == pygame.K_s:
-            self.action = 'down'
+            if self.action == 'up':
+                self.set_status('down')
+                self.action = 'down'
+            else:
+                self.action = 'down'
         if event.key == pygame.K_q:
             self.running = not self.running
 
