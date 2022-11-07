@@ -6,7 +6,7 @@ from src.pacman import Pacman
 
 pygame.init()
 
-screen = pygame.display.set_mode((variables.FRAME_W * 28, variables.FRAME_H * 31))
+screen = pygame.display.set_mode((variables.WINDOW_W, variables.WINDOW_H))
 running = True
 
 pygame.display.set_caption('pacman')
@@ -19,7 +19,7 @@ Map.init()
 
 map1 = load_map('map1')
 
-pacman = Pacman(10, 20)
+pacman = Pacman(13.5, 25)
 
 
 while running:
