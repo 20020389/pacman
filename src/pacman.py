@@ -5,22 +5,30 @@ import src.variables as variables
 
 
 class Animate:
-    __time: int = 0
-    status: int = 0
+    _time: int = 0
+    _status: int = 0
 
     def __init__(self) -> None:
-        self.speed = variables.ANIMATE_SPEED
+        self._speed = variables.ANIMATE_SPEED
         pass
 
     def run(self):
-        self.__time += 1
+        self._time += 1
 
-        if self.__time % self.speed == 0:
-            self.status += 1
+        if self._time % self._speed == 0:
+            self._status += 1
 
-        if self.status == 2:
-            self.status = 0
+        if self._status == 2:
+            self._status = 0
 
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value: int):
+        if value >= 0 and value <= 1:
+            self._status = value
 
 class Pacman:
     animate: Animate
@@ -89,9 +97,10 @@ class Pacman:
         # render
         screen.blit(self.surface, (self.x - self.range_x,
                     self.y - self.range_y), current_image.get())
+        
+        self.__run(screen, mapHash)
 
         if (self.running):
-            self.__run(screen, mapHash)
             self.animate.run()
 
     def can_move(self, map_hash: list[list[int]],  pos: tuple[float, float]):
@@ -131,6 +140,39 @@ class Pacman:
         except:
             return False
 
+    # kiểm tra có thể di chuyển theo hướng khác k
+    def check_way(self, screen: pygame.surface.Surface, map_hash: list[list[int]], way: str):
+        [x, y] = [self.x, self.y]
+        w, h = screen.get_size()
+
+        if way == 'left':
+            if x - self.speed > 0:
+                x -= self.speed
+            elif x > 0:
+                x = 0
+        if way == 'right':
+            if x + self.w + self.speed < w:
+                x += self.speed
+            elif x + self.w < w:
+                x = w - self.w
+
+        if way == 'up':
+            if y - self.speed > 0:
+                y -= self.speed
+            elif y > 0:
+                y = 0
+        if way == 'down':
+            if y + self.h + self.speed < h:
+                y += self.speed
+            elif y + self.h < h:
+                y = h - self.h
+
+        if self.can_move(map_hash, (x, y)):
+            self.x = int(x)
+            self.y = int(y)
+            self.eat(map_hash)
+
+        return self.can_move(map_hash, (x, y))
     # xử lý sự kiện
 
     def eat(self, map_hash: list[list[int]]):
@@ -200,11 +242,17 @@ class Pacman:
                 y = h - self.h
 
         if self.can_move(map_hash, (x, y)):
-            self.x = int(x)
-            self.y = int(y)
             self.eat(map_hash)
+            if self.running:
+                self.x = int(x)
+                self.y = int(y)
+            else:
+                self.running = True
+        else:
+            self.running = False   
+            self.animate.status = 1
 
-        if self.same_frame():
+        if self.same_frame() and self.check_way(screen, map_hash, self.action):
             self.set_status(self.action)
 
     def same_frame(self):
