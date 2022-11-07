@@ -29,12 +29,12 @@ class Pacman:
     y: int
     w: int
     h: int
-    range_x: int
+    range_x: int  # khoảng cách render giữa frame và image
     range_y: int
     speed: int
     action: str
     running: bool
-    access = [45, 46, 47]
+    access = [45, 46, 47, 48]  # nhận biết những ô có thể di chuyển
 
     surface: pygame.surface.Surface
 
@@ -89,12 +89,50 @@ class Pacman:
         # render
         screen.blit(self.surface, (self.x - self.range_x,
                     self.y - self.range_y), current_image.get())
-        
+
         if (self.running):
             self.__run(screen, mapHash)
             self.animate.run()
 
+    def can_move(self, map_hash: list[list[int]],  pos: tuple[float, float]):
+        access = self.access
+
+        topleft_x = pos[0] + 1
+        topleft_y = pos[1] + 1
+
+        bottomleft_x = pos[0]
+        bottomleft_y = pos[1] + variables.FRAME_H - 1
+
+        topright_x = pos[0] + variables.FRAME_W - 1
+        topright_y = pos[1] + 1
+
+        bottomright_x = topright_x
+        bottomright_y = bottomleft_y
+
+        # index
+        topleft_j = int(topleft_x / variables.FRAME_W)
+        topleft_i = int(topleft_y / variables.FRAME_H)
+
+        bottomleft_j = int(bottomleft_x / variables.FRAME_W)
+        bottomleft_i = int(bottomleft_y / variables.FRAME_H)
+
+        topright_j = int(topright_x / variables.FRAME_W)
+        topright_i = int(topright_y / variables.FRAME_H)
+
+        bottomright_j = int(bottomright_x / variables.FRAME_W)
+        bottomright_i = int(bottomright_y / variables.FRAME_H)
+
+        try:
+            access.index(map_hash[topleft_i][topleft_j])
+            access.index(map_hash[bottomleft_i][bottomleft_j])
+            access.index(map_hash[topright_i][topright_j])
+            access.index(map_hash[bottomright_i][bottomright_j])
+            return True
+        except:
+            return False
+
     # xử lý sự kiện
+
     def handle(self, event: pygame.event.Event):
         if event.key == pygame.K_a:
             if self.action == 'right':
@@ -123,7 +161,7 @@ class Pacman:
         if event.key == pygame.K_q:
             self.running = not self.running
 
-    def __run(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
+    def __run(self, screen: pygame.surface.Surface, map_hash: list[list[int]] = []):
         w, h = screen.get_size()
 
         x: int = self.x
@@ -151,18 +189,17 @@ class Pacman:
             elif y + self.h < h:
                 y = h - self.h
 
-        
-        self.x = int(x)
-        self.y = int(y)
+        if self.can_move(map_hash, (x, y)):
+            self.x = int(x)
+            self.y = int(y)
 
         if self.same_frame():
             self.set_status(self.action)
-            
+
     def same_frame(self):
-        
+
         pos_x = self.x / int(variables.FRAME_W)
         pos_y = self.y / int(variables.FRAME_H)
-
 
         check_x = int(pos_x)
         check_y = int(pos_y)

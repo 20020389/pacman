@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 import src.variables as variables
@@ -44,3 +46,23 @@ class Map:
                 index = map_data[i][j] - 1
                 screen.blit(Map.img, (Map.w * j, Map.h * i),
                             Map.path[index].get())
+    
+def load_map(name: str) -> Map:
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    map_path = os.path.join(ROOT_DIR, str.format("../assets/map/{}.txt", name))
+    file_data = open(map_path, 'r')
+
+    map_hash: list[list[int]] = []
+    i = 0
+    
+    for line in file_data:
+        list_data = line.split(',')
+        map_hash.append([])
+        for num in list_data:
+            try:
+                map_hash[i].append(int(num))
+            except:
+                pass
+        i += 1
+    # print(map_hash)
+    return Map(map_hash)

@@ -7,4 +7,4 @@ PACMAN_SURFACE_H = 26 * SCALE
 PACMAN_SPEED = 2
 
 # animate
-ANIMATE_SPEED = 15 # càng nhỏ hiệu ứng càng nhanh
+ANIMATE_SPEED = 10 # càng nhỏ hiệu ứng càng nhanh
