@@ -10,11 +10,11 @@ if image:
 print(image)
 
 class Spite:
-    def __init__(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
+    def __init__(self, x: float | int, y: float | int, w: float | int, h: float | int):
+        self.x = int(x)
+        self.y = int(y)
+        self.w = int(w)
+        self.h = int(h)
 
     def get(self):
         return self.x, self.y, self.w, self.h

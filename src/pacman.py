@@ -2,6 +2,7 @@ import pygame
 
 import src.spite as spite
 import src.variables as variables
+from src.game_manager import GameManager
 
 
 class Animate:
@@ -46,7 +47,9 @@ class Pacman:
 
     surface: pygame.surface.Surface
 
-    def __init__(self, x: float = 0, y: float = 0):
+    game_manager: GameManager
+
+    def __init__(self, manager: GameManager, x: float = 0, y: float = 0):
         img_w = variables.PACMAN_SURFACE_W
         img_h = variables.PACMAN_SURFACE_H
         w = variables.FRAME_W
@@ -57,24 +60,25 @@ class Pacman:
             image = pygame.transform.scale(image, (image.get_width(
             ) * variables.SCALE, image.get_height() * variables.SCALE))
 
-        imgs: list[spite.Spite] = []
-        imgs.append(spite.Spite(0, 0, img_w, img_h))  # right 1
-        imgs.append(spite.Spite(img_w, 0, img_w, img_h))  # right 2
-        imgs.append(spite.Spite(img_w * 2, 0, img_w, img_h))  # left 1
-        imgs.append(spite.Spite(img_w * 3, 0, img_w, img_h))  # left 2
-        imgs.append(spite.Spite(img_w * 4, 0, img_w, img_h))  # up 1
-        imgs.append(spite.Spite(img_w * 5, 0, img_w, img_h))  # up 2
-        imgs.append(spite.Spite(img_w * 6, 0, img_w, img_h))  # right 1
-        imgs.append(spite.Spite(img_w * 7, 0, img_w, img_h))  # right 2
+        imgs_rect: list[spite.Spite] = []
+        imgs_rect.append(spite.Spite(0, 0, img_w, img_h))  # right 1
+        imgs_rect.append(spite.Spite(img_w, 0, img_w, img_h))  # right 2
+        imgs_rect.append(spite.Spite(img_w * 2, 0, img_w, img_h))  # left 1
+        imgs_rect.append(spite.Spite(img_w * 3, 0, img_w, img_h))  # left 2
+        imgs_rect.append(spite.Spite(img_w * 4, 0, img_w, img_h))  # up 1
+        imgs_rect.append(spite.Spite(img_w * 5, 0, img_w, img_h))  # up 2
+        imgs_rect.append(spite.Spite(img_w * 6, 0, img_w, img_h))  # right 1
+        imgs_rect.append(spite.Spite(img_w * 7, 0, img_w, img_h))  # right 2
 
         # define
+        self.game_manager = manager
         self.x = int(x * variables.FRAME_W)
         self.y = int(y * variables.FRAME_H)
         self.range_x = int((img_w - w) / 2)
         self.range_y = int((img_h - h) / 2)
         self.w = int(w)
         self.h = int(h)
-        self.imgs = imgs
+        self.imgs_rect = imgs_rect
         self.status = 'right'
         self.animate = Animate()
         self.surface = image
@@ -92,7 +96,7 @@ class Pacman:
         if self.status == 'down':
             status += 6
 
-        current_image = self.imgs[status]
+        current_image = self.imgs_rect[status]
 
         # render
         screen.blit(self.surface, (self.x - self.range_x,
@@ -182,7 +186,10 @@ class Pacman:
         i = int(center_y / variables.FRAME_H)
         j = int(center_x / variables.FRAME_W)
 
-        map_hash[i][j] = 45
+        if map_hash[i][j] != 45:
+            if map_hash[i][j] == 46:
+                self.game_manager.up_score(10)
+            map_hash[i][j] = 45
         pass
 
     def handle(self, event: pygame.event.Event):
