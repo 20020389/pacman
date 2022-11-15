@@ -1,54 +1,14 @@
 import pygame
 
+import src.entity as entity
 import src.spite as spite
 import src.variables as variables
 from src.game_manager import GameManager
+from src.interface import Animate
 
 
-class Animate:
-    _time: int = 0
-    _status: int = 0
-
-    def __init__(self) -> None:
-        self._speed = variables.ANIMATE_SPEED
-        pass
-
-    def run(self):
-        self._time += 1
-
-        if self._time % self._speed == 0:
-            self._status += 1
-
-        if self._status == 2:
-            self._status = 0
-
-    @property
-    def status(self):
-        return self._status
-
-    @status.setter
-    def status(self, value: int):
-        if value >= 0 and value <= 1:
-            self._status = value
-
-class Pacman:
-    animate: Animate
-    status: str
-    x: int
-    y: int
-    w: int
-    h: int
-    range_x: int  # khoảng cách render giữa frame và image
-    range_y: int
-    speed: int
-    action: str
-    running: bool
-    access = [45, 46, 47, 48]  # nhận biết những ô có thể di chuyển
-
-    surface: pygame.surface.Surface
-
-    game_manager: GameManager
-
+class Pacman(entity.Entity):
+    
     def __init__(self, manager: GameManager, x: float = 0, y: float = 0):
         img_w = variables.PACMAN_SURFACE_W
         img_h = variables.PACMAN_SURFACE_H
@@ -70,6 +30,9 @@ class Pacman:
         imgs_rect.append(spite.Spite(img_w * 6, 0, img_w, img_h))  # right 1
         imgs_rect.append(spite.Spite(img_w * 7, 0, img_w, img_h))  # right 2
 
+        dead_animate = Animate()
+        dead_animate.limit = 3
+
         # define
         self.game_manager = manager
         self.x = int(x * variables.FRAME_W)
@@ -80,11 +43,14 @@ class Pacman:
         self.h = int(h)
         self.imgs_rect = imgs_rect
         self.status = 'right'
-        self.animate = Animate()
         self.surface = image
         self.speed = variables.PACMAN_SPEED
         self.running = True
         self.action = 'right'
+        self.access = [45, 46, 47, 48]
+        self.animate = Animate()
+        self.dead_animate = dead_animate
+        self.dead = False
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         status = self.animate.status
@@ -99,12 +65,14 @@ class Pacman:
         current_image = self.imgs_rect[status]
 
         # render
-        screen.blit(self.surface, (self.x - self.range_x,
+        if not self.dead:
+            screen.blit(self.surface, (self.x - self.range_x,
                     self.y - self.range_y), current_image.get())
+            self.__run(screen, mapHash)
         
-        self.__run(screen, mapHash)
+        
 
-        if (self.running):
+        if (self.running and not self.dead):
             self.animate.run()
 
     def can_move(self, map_hash: list[list[int]],  pos: tuple[float, float]):
@@ -146,7 +114,7 @@ class Pacman:
 
     # kiểm tra có thể di chuyển theo hướng khác k
     def check_way(self, screen: pygame.surface.Surface, map_hash: list[list[int]], way: str):
-        [x, y] = [self.x, self.y]
+        x, y = self.x, self.y
         w, h = screen.get_size()
 
         if way == 'left':

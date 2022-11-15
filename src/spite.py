@@ -7,8 +7,6 @@ if image:
     image = pygame.transform.scale(image, (image.get_width(
     ) * variables.SCALE, image.get_height() * variables.SCALE))
 
-print(image)
-
 class Spite:
     def __init__(self, x: float | int, y: float | int, w: float | int, h: float | int):
         self.x = int(x)

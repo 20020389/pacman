@@ -7,17 +7,35 @@ from src.text import Text
 
 
 class GameManager:
-    life: int
-    score: int
+    __life: int
+    __score: int
+    __pause: bool
+
 
     def __init__(self) -> None:
-        self.life = 3
-        self.score = 0
+        self.__life = 3
+        self.__score = 0
+        self.__pause = False
         pass
 
     def up_score(self, score: int):
-        self.score += score
+        self.__score += score
 
+    @property
+    def score(self):
+        return self.__score
+
+    @property
+    def life(self):
+        return self.__life
+
+    @property
+    def pause(self):
+        return self.__pause
+
+    @pause.setter
+    def pause(self, value: bool):
+        self.__pause = value
 
 class Topbar:
 
