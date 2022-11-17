@@ -1,6 +1,5 @@
 import pygame
 
-from src.game_manager import GameManager
 from src.interface import Animate
 
 
@@ -22,5 +21,3 @@ class Entity(object):
     dead_animate: Animate
 
     surface: pygame.surface.Surface
-
-    game_manager: GameManager

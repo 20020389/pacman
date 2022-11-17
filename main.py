@@ -3,7 +3,6 @@ import pygame
 import src.variables as variables
 from src.game_manager import GameManager, Topbar
 from src.map import Map, load_map
-from src.pacman import Pacman
 
 pygame.init()
 
@@ -21,13 +20,9 @@ game_manager = GameManager()
 
 map1 = load_map('map1')
 
-pacman = Pacman(game_manager, 13.5, 25)
-
 topbar = Topbar(game_manager)
 
-def init_entities() -> (Pacman):
-    pacman = Pacman(game_manager, 13.5, 25)
-    return pacman
+
 
 while running:
     pygame.time.wait(10)
@@ -35,20 +30,18 @@ while running:
     if game_manager.pacman_dead and not game_manager.new_life_pause.isFinish():
         game_manager.new_life_pause.run()
     elif game_manager.pacman_dead and game_manager.new_life_pause.isFinish():
-        game_manager.pacman_dead = False
-        game_manager.decrease_life()
-        game_manager.new_life_pause.reset()
-        pacman = init_entities()
+        if game_manager.life > 1:
+            game_manager.reset_on_dead()
 
     map1.draw(screen)
-    pacman.draw(screen, map1.map)
+    game_manager.draw(screen, map1.map)
     topbar.draw(screen)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            pacman.handle(event)
+            game_manager.handle(event)
 
     pygame.display.update()
 

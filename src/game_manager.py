@@ -2,13 +2,13 @@
 import pygame
 
 from src.pacman import Pacman
-from src.interface import Animate
+from src.interface import Animate, Manager_Method
 import src.variables as variables
 from src.spite import Spite
 from src.text import Text
 
 
-class GameManager:
+class GameManager(Manager_Method):
     __life: int
     __score: int
     __pause: bool
@@ -29,9 +29,21 @@ class GameManager:
         self.killing_pacman = False
         self.pacman_dead = False
         self.new_life_pause = new_life_pause
-        pass
 
-        
+        self.pacman = Pacman(self, 13.5, 25)
+        pass
+    
+    def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
+        self.pacman.draw(screen, mapHash)
+
+    def handle(self, event: pygame.event.Event):
+        self.pacman.handle(event)
+
+    def reset_on_dead(self):
+        self.pacman = Pacman(self, 13.5, 25)
+        self.pacman_dead = False
+        self.decrease_life()
+        self.new_life_pause.reset()
 
     def up_score(self, score: int):
         self.__score += score
@@ -54,6 +66,12 @@ class GameManager:
     @pause.setter
     def pause(self, value: bool):
         self.__pause = value
+
+    def set_killing_pacman(self, value: bool):
+        self.killing_pacman = value
+
+    def set_pacman_dead(self, value: bool):
+        self.pacman_dead = value
 
 class Topbar:
 

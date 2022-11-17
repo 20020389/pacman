@@ -1,3 +1,4 @@
+import pygame
 
 import src.variables as variables
 
@@ -13,6 +14,44 @@ class Position:
 
     def get(self):
         return self.x, self.y
+
+class Manager_Method:
+    def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
+        pass
+
+    def handle(self, event: pygame.event.Event):
+        pass
+
+    def reset_on_dead(self):
+        pass
+
+    def up_score(self, score: int):
+        pass
+
+    @property
+    def score(self):
+        pass
+
+    @property
+    def life(self):
+        pass
+    
+    def decrease_life(self):
+        pass
+
+    @property
+    def pause(self):
+        pass
+
+    @pause.setter
+    def pause(self, value: bool):
+        pass
+
+    def set_killing_pacman(self, value: bool):
+        pass
+
+    def set_pacman_dead(self, value: bool):
+        pass
 
 class Animate:
     __time: int = 0

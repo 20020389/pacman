@@ -3,13 +3,12 @@ import pygame
 import src.entity as entity
 import src.spite as spite
 import src.variables as variables
-from src.game_manager import GameManager
-from src.interface import Animate
+from src.interface import Animate, Manager_Method
 
 
 class Pacman(entity.Entity):
     
-    def __init__(self, manager: GameManager, x: float = 0, y: float = 0):
+    def __init__(self, manager: Manager_Method, x: float = 0, y: float = 0):
         running_img_w = variables.PACMAN_SURFACE_W
         running_img_h = variables.PACMAN_SURFACE_H
         
@@ -98,8 +97,8 @@ class Pacman(entity.Entity):
             self.dead_animate.run()
             pass
         elif self.dead and self.dead_animate.isFinish():
-            self.game_manager.killing_pacman = False
-            self.game_manager.pacman_dead = True
+            self.game_manager.set_killing_pacman(False)
+            self.game_manager.set_pacman_dead(True)
         
         if self.running and not self.dead:
             self.animate.run()
@@ -187,7 +186,7 @@ class Pacman(entity.Entity):
             # kill pacman
             if map_hash[i][j] == 48:
                 self.set_dead(True)
-                self.game_manager.killing_pacman = False
+                self.game_manager.set_killing_pacman(True)
                 
             if map_hash[i][j] == 46:
                 self.game_manager.up_score(10)
