@@ -21,13 +21,13 @@ class Animate:
     __limit: int = 2
 
     def __init__(self) -> None:
-        self.__speed = variables.ANIMATE_SPEED
+        self.__delaytime = variables.ANIMATE_DELAYTIME
         pass
 
     def run(self):
         self.__time += 1
 
-        if self.__time % self.__speed == 0:
+        if self.__time % self.__delaytime == 0:
             if self.__status < self.__limit:
                 self.__status += 1
 
@@ -57,5 +57,9 @@ class Animate:
     def isFinish(self):
         return self.__status == self.__limit
 
-    def set_speed(self, value: bool):
-        self.__speed = value
+    def set_delaytime(self, value: int):
+        self.__delaytime = value
+
+    def reset(self):
+        self.__status = 0
+        self.__time = 0

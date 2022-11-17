@@ -12,6 +12,6 @@ PACMAN_SURFACE_H = 26 * SCALE
 PACMAN_SPEED = 2
 
 # animate
-ANIMATE_SPEED = 10 # càng nhỏ hiệu ứng càng nhanh
+ANIMATE_DELAYTIME = 10 # càng nhỏ hiệu ứng càng nhanh
 _DIRNAME = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(_DIRNAME, '..')

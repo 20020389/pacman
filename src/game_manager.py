@@ -1,6 +1,8 @@
 
 import pygame
 
+from src.pacman import Pacman
+from src.interface import Animate
 import src.variables as variables
 from src.spite import Spite
 from src.text import Text
@@ -10,13 +12,26 @@ class GameManager:
     __life: int
     __score: int
     __pause: bool
+    killing_pacman: bool
+    pacman_dead: bool
+    new_life_pause: Animate
 
+    pacman: Pacman
 
     def __init__(self) -> None:
+        new_life_pause = Animate()
+        new_life_pause.set_infinity(False)
+        new_life_pause.set_delaytime(50)
+
         self.__life = 3
         self.__score = 0
         self.__pause = False
+        self.killing_pacman = False
+        self.pacman_dead = False
+        self.new_life_pause = new_life_pause
         pass
+
+        
 
     def up_score(self, score: int):
         self.__score += score
@@ -28,6 +43,9 @@ class GameManager:
     @property
     def life(self):
         return self.__life
+    
+    def decrease_life(self):
+        self.__life = self.__life - 1
 
     @property
     def pause(self):

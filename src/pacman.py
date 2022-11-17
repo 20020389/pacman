@@ -10,8 +10,12 @@ from src.interface import Animate
 class Pacman(entity.Entity):
     
     def __init__(self, manager: GameManager, x: float = 0, y: float = 0):
-        img_w = variables.PACMAN_SURFACE_W
-        img_h = variables.PACMAN_SURFACE_H
+        running_img_w = variables.PACMAN_SURFACE_W
+        running_img_h = variables.PACMAN_SURFACE_H
+        
+        dead_img_w = 32 * variables.SCALE
+        dead_img_h = 32 * variables.SCALE
+
         w = variables.FRAME_W
         h = variables.FRAME_H
 
@@ -21,24 +25,39 @@ class Pacman(entity.Entity):
             ) * variables.SCALE, image.get_height() * variables.SCALE))
 
         imgs_rect: list[spite.Spite] = []
-        imgs_rect.append(spite.Spite(0, 0, img_w, img_h))  # right 1
-        imgs_rect.append(spite.Spite(img_w, 0, img_w, img_h))  # right 2
-        imgs_rect.append(spite.Spite(img_w * 2, 0, img_w, img_h))  # left 1
-        imgs_rect.append(spite.Spite(img_w * 3, 0, img_w, img_h))  # left 2
-        imgs_rect.append(spite.Spite(img_w * 4, 0, img_w, img_h))  # up 1
-        imgs_rect.append(spite.Spite(img_w * 5, 0, img_w, img_h))  # up 2
-        imgs_rect.append(spite.Spite(img_w * 6, 0, img_w, img_h))  # right 1
-        imgs_rect.append(spite.Spite(img_w * 7, 0, img_w, img_h))  # right 2
+        imgs_rect.append(spite.Spite(0, 0, running_img_w, running_img_h))  # right 1
+        imgs_rect.append(spite.Spite(running_img_w, 0, running_img_w, running_img_h))  # right 2
+        imgs_rect.append(spite.Spite(running_img_w * 2, 0, running_img_w, running_img_h))  # left 1
+        imgs_rect.append(spite.Spite(running_img_w * 3, 0, running_img_w, running_img_h))  # left 2
+        imgs_rect.append(spite.Spite(running_img_w * 4, 0, running_img_w, running_img_h))  # up 1
+        imgs_rect.append(spite.Spite(running_img_w * 5, 0, running_img_w, running_img_h))  # up 2
+        imgs_rect.append(spite.Spite(running_img_w * 6, 0, running_img_w, running_img_h))  # right 1
+        imgs_rect.append(spite.Spite(running_img_w * 7, 0, running_img_w, running_img_h))  # right 2
 
+        # dead
+        # imgs_rect.append(spite.Spite(dead_img_w * 8, 0, dead_img_w, running_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 1, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 2, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 3, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 4, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 5, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 6, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 7, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 8, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 9, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 10, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 8 + dead_img_w * 11, 0, dead_img_w, dead_img_h))
+        
         dead_animate = Animate()
-        dead_animate.limit = 3
+        dead_animate.limit = 11
+        dead_animate.set_infinity(False)
 
         # define
         self.game_manager = manager
         self.x = int(x * variables.FRAME_W)
         self.y = int(y * variables.FRAME_H)
-        self.range_x = int((img_w - w) / 2)
-        self.range_y = int((img_h - h) / 2)
+        self.range_x = int((running_img_w - w) / 2)
+        self.range_y = int((running_img_h - h) / 2)
         self.w = int(w)
         self.h = int(h)
         self.imgs_rect = imgs_rect
@@ -70,9 +89,19 @@ class Pacman(entity.Entity):
                     self.y - self.range_y), current_image.get())
             self.__run(screen, mapHash)
         
-        
+        if self.dead and not self.dead_animate.isFinish():
+            status = self.dead_animate.status + 8
+            current_image = self.imgs_rect[status]
 
-        if (self.running and not self.dead):
+            screen.blit(self.surface, (self.x - self.range_x,
+                    self.y - self.range_y), current_image.get())
+            self.dead_animate.run()
+            pass
+        elif self.dead and self.dead_animate.isFinish():
+            self.game_manager.killing_pacman = False
+            self.game_manager.pacman_dead = True
+        
+        if self.running and not self.dead:
             self.animate.run()
 
     def can_move(self, map_hash: list[list[int]],  pos: tuple[float, float]):
@@ -155,8 +184,14 @@ class Pacman(entity.Entity):
         j = int(center_x / variables.FRAME_W)
 
         if map_hash[i][j] != 45:
+            # kill pacman
+            if map_hash[i][j] == 48:
+                self.set_dead(True)
+                self.game_manager.killing_pacman = False
+                
             if map_hash[i][j] == 46:
                 self.game_manager.up_score(10)
+            # chuyển đường đi có item thành đường đi thường
             map_hash[i][j] = 45
         pass
 
@@ -243,3 +278,6 @@ class Pacman(entity.Entity):
     def set_status(self, status: str):
         if self.status == 'left' or self.status == 'right' or self.status == 'up' or self.status == 'down':
             self.status = status
+
+    def set_dead(self, value: bool):
+        self.dead = value
