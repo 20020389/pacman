@@ -13,7 +13,7 @@ PACMAN_SPEED = 2
 
 GHOST_SURFACE_W = 28 * SCALE
 GHOST_SURFACE_H = 28 * SCALE
-GHOST_SPEED = 2.1
+GHOST_SPEED = 2.2
 
 # animate
 ANIMATE_DELAYTIME = 10  # càng nhỏ hiệu ứng càng nhanh

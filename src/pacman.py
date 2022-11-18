@@ -6,6 +6,10 @@ import src.variables as variables
 from src.interface import Animate, Manager_Method
 
 
+def format(value: float):
+    return float("{0:.2f}".format(value))
+
+
 class Pacman(entity.Entity):
 
     def __init__(self, manager: Manager_Method, x: float = 0, y: float = 0):
@@ -186,11 +190,6 @@ class Pacman(entity.Entity):
             elif y + self.h < h:
                 y = h - self.h
 
-        if self.can_move(map_hash, (x, y)):
-            self.x = int(x)
-            self.y = int(y)
-            self.eat(map_hash)
-
         return self.can_move(map_hash, (x, y))
     # xử lý sự kiện
 
@@ -214,6 +213,7 @@ class Pacman(entity.Entity):
         pass
 
     def handle(self, event: pygame.event.Event):
+
         if event.key == pygame.K_a:
             if self.action == 'right':
                 self.set_status('left')
@@ -248,32 +248,20 @@ class Pacman(entity.Entity):
         y: float = self.y
 
         if self.status == 'left':
-            if x - self.speed > 0:
-                x -= self.speed
-            elif x > 0:
-                x = 0
+            x = self.__move_left(w)
         if self.status == 'right':
-            if x + self.w + self.speed < w:
-                x += self.speed
-            elif x + self.w < w:
-                x = w - self.w
+            x = self.__move_right(w)
 
         if self.status == 'up':
-            if y - self.speed > 0:
-                y -= self.speed
-            elif y > 0:
-                y = 0
+            y = self.__move_up(h)
         if self.status == 'down':
-            if y + self.h + self.speed < h:
-                y += self.speed
-            elif y + self.h < h:
-                y = h - self.h
+            y = self.__move_down(h)
 
         if self.can_move(map_hash, (x, y)):
             self.eat(map_hash)
             if self.running:
-                self.x = int(x)
-                self.y = int(y)
+                self.x = x
+                self.y = y
             else:
                 self.running = True
         else:
@@ -282,6 +270,78 @@ class Pacman(entity.Entity):
 
         if self.same_frame() and self.check_way(screen, map_hash, self.action):
             self.set_status(self.action)
+
+    def __move_right(self, w: float):
+        x: float = self.x
+        x = format(x)
+
+        nextframe_j = (int(x / variables.FRAME_W) + 1) * variables.FRAME_W
+        nextframe_j = format(nextframe_j)
+
+        range_h = nextframe_j - x
+
+        if self.speed < range_h:
+            if x + self.w + self.speed < w:
+                x += self.speed
+            elif x + self.w < w:
+                x = w - self.w
+        else:
+            x = nextframe_j
+        return x
+
+    def __move_left(self, w: float):
+        x: float = self.x
+        x = float("{0:.2f}".format(x))
+
+        nextframe_j = (int(x / variables.FRAME_W)) * variables.FRAME_W
+        nextframe_j = float("{0:.2f}".format(nextframe_j))
+
+        range_h = x - nextframe_j
+
+        if x == nextframe_j or self.speed < range_h:
+            if x - self.speed > 0:
+                x -= self.speed
+            elif x > 0:
+                x = 0
+        else:
+            x = nextframe_j
+        return x
+
+    def __move_up(self, h: float):
+        y: float = self.y
+        y = float("{0:.2f}".format(y))
+
+        nextframe_i = (int(y / variables.FRAME_H)) * variables.FRAME_H
+        nextframe_i = float("{0:.2f}".format(nextframe_i))
+
+        range_v = y - nextframe_i
+
+        if y == nextframe_i or self.speed < range_v:
+            if y - self.speed > 0:
+                y -= self.speed
+            elif y > 0:
+                y = 0
+        else:
+            y = nextframe_i
+        return y
+
+    def __move_down(self, h: float):
+        y: float = self.y
+        y = float("{0:.2f}".format(y))
+
+        nextframe_i = (int(y / variables.FRAME_H) + 1) * variables.FRAME_H
+        nextframe_i = float("{0:.2f}".format(nextframe_i))
+
+        range_v = nextframe_i - y
+
+        if self.speed < range_v:
+            if y + self.h + self.speed < h:
+                y += self.speed
+            elif y + self.h < h:
+                y = h - self.h
+        else:
+            y = nextframe_i
+        return y
 
     def same_frame(self):
 
