@@ -1,8 +1,8 @@
-###required
+### required
 
 -   python, pip
 
-###install package
+### install package
 
 ```
 $ pip install virtualenv (restart terminal after installation)
@@ -11,7 +11,7 @@ $ ./venv/Scripts/activate
 $ pip install -r package.txt
 ```
 
-###run
+### run
 
 ```
 $ ./venv/Scripts/activate
