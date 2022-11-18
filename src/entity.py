@@ -11,7 +11,7 @@ class Entity(object):
     h: int
     range_x: int  # khoảng cách render giữa frame và image
     range_y: int
-    speed: int
+    speed: float
     action: str
     running: bool
     access: list[int]  # nhận biết những ô có thể di chuyển

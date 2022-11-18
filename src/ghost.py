@@ -1,3 +1,4 @@
+import random
 import pygame
 
 import src.entity as entity
@@ -6,65 +7,61 @@ import src.variables as variables
 from src.interface import Animate, Manager_Method
 
 
-class Pacman(entity.Entity):
+class Ghost(entity.Entity):
+    image: pygame.surface.Surface | None = None
+    timing: int
 
-    def __init__(self, manager: Manager_Method, x: float = 0, y: float = 0):
-        running_img_w = variables.PACMAN_SURFACE_W
-        running_img_h = variables.PACMAN_SURFACE_H
+    def __init__(self, manager: Manager_Method, position: tuple[float, float], type: int):
+        running_img_w = variables.GHOST_SURFACE_W
+        running_img_h = variables.GHOST_SURFACE_H
 
-        dead_img_w = 32 * variables.SCALE
-        dead_img_h = 32 * variables.SCALE
+        dead_img_w = 28 * variables.SCALE
+        dead_img_h = 28 * variables.SCALE
 
         w = variables.FRAME_W
         h = variables.FRAME_H
 
-        image = pygame.image.load('assets/pacman.png')
-        if image:
-            image = pygame.transform.scale(image, (image.get_width(
-            ) * variables.SCALE, image.get_height() * variables.SCALE))
+        ghost_type = type
+        if type >= 0 and type <= 4:
+            ghost_type *= variables.GHOST_SURFACE_H
+        else:
+            ghost_type = 0
+
+        if not Ghost.image:
+            image = pygame.image.load('assets/ghost.png')
+            if image:
+                image = pygame.transform.scale(image, (image.get_width(
+                ) * variables.SCALE, image.get_height() * variables.SCALE))
+            Ghost.image = image
 
         imgs_rect: list[spite.Spite] = []
         imgs_rect.append(spite.Spite(
-            0, 0, running_img_w, running_img_h))  # right 1
-        imgs_rect.append(spite.Spite(running_img_w, 0,
+            0, ghost_type, running_img_w, running_img_h))  # right 1
+        imgs_rect.append(spite.Spite(running_img_w, ghost_type,
                          running_img_w, running_img_h))  # right 2
-        imgs_rect.append(spite.Spite(running_img_w * 2, 0,
-                         running_img_w, running_img_h))  # left 1
-        imgs_rect.append(spite.Spite(running_img_w * 3, 0,
-                         running_img_w, running_img_h))  # left 2
-        imgs_rect.append(spite.Spite(running_img_w * 4, 0,
-                         running_img_w, running_img_h))  # up 1
-        imgs_rect.append(spite.Spite(running_img_w * 5, 0,
-                         running_img_w, running_img_h))  # up 2
-        imgs_rect.append(spite.Spite(running_img_w * 6, 0,
-                         running_img_w, running_img_h))  # right 1
-        imgs_rect.append(spite.Spite(running_img_w * 7, 0,
-                         running_img_w, running_img_h))  # right 2
+        imgs_rect.append(spite.Spite(running_img_w * 2,
+                         ghost_type, running_img_w, running_img_h))  # left 1
+        imgs_rect.append(spite.Spite(running_img_w * 3,
+                         ghost_type, running_img_w, running_img_h))  # left 2
+        imgs_rect.append(spite.Spite(running_img_w * 4,
+                         ghost_type, running_img_w, running_img_h))  # left 2
+        imgs_rect.append(spite.Spite(running_img_w * 5,
+                         ghost_type, running_img_w, running_img_h))  # left 2
+        imgs_rect.append(spite.Spite(running_img_w * 6,
+                         ghost_type, running_img_w, running_img_h))  # left 2
+        imgs_rect.append(spite.Spite(running_img_w * 7,
+                         ghost_type, running_img_w, running_img_h))  # left 2
 
         # dead
         # imgs_rect.append(spite.Spite(dead_img_w * 8, 0, dead_img_w, running_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 1, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 2, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 3, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 4, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 5, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 6, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 7, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 8, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 9, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 10, 0, dead_img_w, dead_img_h))
-        imgs_rect.append(spite.Spite(running_img_w * 8 +
-                         dead_img_w * 11, 0, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(dead_img_w * 0, 5 *
+                         variables.GHOST_SURFACE_H, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(dead_img_w * 1, 5 *
+                         variables.GHOST_SURFACE_H, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(dead_img_w * 2, 5 *
+                         variables.GHOST_SURFACE_H, dead_img_w, dead_img_h))
+        imgs_rect.append(spite.Spite(dead_img_w * 3, 5 *
+                         variables.GHOST_SURFACE_H, dead_img_w, dead_img_h))
 
         dead_animate = Animate()
         dead_animate.limit = 11
@@ -72,22 +69,23 @@ class Pacman(entity.Entity):
 
         # define
         self.game_manager = manager
-        self.x = int(x * variables.FRAME_W)
-        self.y = int(y * variables.FRAME_H)
+        self.x = int(position[0] * variables.FRAME_W)
+        self.y = int(position[1] * variables.FRAME_H)
         self.range_x = int((running_img_w - w) / 2)
         self.range_y = int((running_img_h - h) / 2)
         self.w = int(w)
         self.h = int(h)
         self.imgs_rect = imgs_rect
         self.status = 'right'
-        self.surface = image
-        self.speed = variables.PACMAN_SPEED
+        self.surface = Ghost.image
+        self.speed = variables.GHOST_SPEED
         self.running = True
         self.action = 'right'
         self.access = [45, 46, 47, 48]
         self.animate = Animate()
         self.dead_animate = dead_animate
         self.dead = False
+        self.timing = 0
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         status = self.animate.status
@@ -115,6 +113,7 @@ class Pacman(entity.Entity):
                                        self.y - self.range_y), current_image.get())
             self.dead_animate.run()
             pass
+
         elif self.dead and self.dead_animate.isFinish():
             self.game_manager.set_killing_pacman(False)
             self.game_manager.set_pacman_dead(True)
@@ -163,6 +162,8 @@ class Pacman(entity.Entity):
     def check_way(self, screen: pygame.surface.Surface, map_hash: list[list[int]], way: str):
         x, y = self.x, self.y
         w, h = screen.get_size()
+        if way != 'left' and way != 'right' and way != 'up' and way != 'down':
+            way = 'right'
 
         if way == 'left':
             if x - self.speed > 0:
@@ -201,45 +202,28 @@ class Pacman(entity.Entity):
         i = int(center_y / variables.FRAME_H)
         j = int(center_x / variables.FRAME_W)
 
-        if map_hash[i][j] != 45:
-            # kill pacman
-            if map_hash[i][j] == 48:
-                self.set_dead(True)
-                self.game_manager.set_killing_pacman(True)
+        # if map_hash[i][j] != 45:
+        #     # kill pacman
+        #     if map_hash[i][j] == 48:
+        #         self.set_dead(True)
+        #         self.game_manager.set_killing_pacman(True)
 
-            if map_hash[i][j] == 46:
-                self.game_manager.up_score(10)
-            # chuyển đường đi có item thành đường đi thường
-            map_hash[i][j] = 45
-        pass
+        #     if map_hash[i][j] == 46:
+        #         self.game_manager.up_score(10)
+        #     # chuyển đường đi có item thành đường đi thường
+        #     map_hash[i][j] = 45
+        # pass
 
-    def handle(self, event: pygame.event.Event):
-        if event.key == pygame.K_a:
-            if self.action == 'right':
-                self.set_status('left')
-                self.action = 'left'
-            else:
-                self.action = 'left'
-        if event.key == pygame.K_d:
-            if self.action == 'left':
-                self.set_status('right')
-                self.action = 'right'
-            else:
-                self.action = 'right'
-        if event.key == pygame.K_w:
-            if self.action == 'down':
-                self.set_status('up')
-                self.action = 'up'
-            else:
-                self.action = 'up'
-        if event.key == pygame.K_s:
-            if self.action == 'up':
-                self.set_status('down')
-                self.action = 'down'
-            else:
-                self.action = 'down'
-        if event.key == pygame.K_q:
-            self.running = not self.running
+    def new_way(self, screen: pygame.surface.Surface, map_hash: list[list[int]]):
+        way = random.randrange(0, 4)
+        if way == 0 and self.check_way(screen, map_hash, 'left'):
+            self.status = 'left'
+        if way == 1 and self.check_way(screen, map_hash, 'right'):
+            self.status = 'right'
+        if way == 2 and self.check_way(screen, map_hash, 'up'):
+            self.status = 'up'
+        if way == 3 and self.check_way(screen, map_hash, 'down'):
+            self.status = 'down'
 
     def __run(self, screen: pygame.surface.Surface, map_hash: list[list[int]] = []):
         w, h = screen.get_size()
@@ -279,9 +263,14 @@ class Pacman(entity.Entity):
         else:
             self.running = False
             self.animate.status = 1
+            self.new_way(screen, map_hash)
 
-        if self.same_frame() and self.check_way(screen, map_hash, self.action):
-            self.set_status(self.action)
+        if self.same_frame():
+            self.timing += 1
+
+            if self.timing == 5:
+                self.new_way(screen, map_hash)
+                self.timing = 0
 
     def same_frame(self):
 
