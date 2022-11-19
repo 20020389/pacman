@@ -13,7 +13,6 @@ def format(value: float):
 
 class Ghost(entity.Entity):
     image: pygame.surface.Surface | None = None
-    timing: int
 
     def __init__(self, manager: Manager_Method, position: tuple[float, float], type: int):
         running_img_w = variables.GHOST_SURFACE_W

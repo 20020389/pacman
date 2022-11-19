@@ -1,11 +1,9 @@
 import pygame
-
+from abc import ABCMeta, abstractmethod
 import src.variables as variables
 
 
 class Position:
-    x: float
-    y: float
 
     def __init__(self, x: float = 0, y: float = 0) -> None:
         self.x = x
@@ -15,16 +13,21 @@ class Position:
     def get(self):
         return self.x, self.y
 
+
 class Manager_Method:
+    @abstractmethod
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         pass
 
+    @abstractmethod
     def handle(self, event: pygame.event.Event):
         pass
 
+    @abstractmethod
     def reset_on_dead(self):
         pass
 
+    @abstractmethod
     def up_score(self, score: int):
         pass
 
@@ -35,7 +38,7 @@ class Manager_Method:
     @property
     def life(self):
         pass
-    
+
     def decrease_life(self):
         pass
 
@@ -53,14 +56,14 @@ class Manager_Method:
     def set_pacman_dead(self, value: bool):
         pass
 
-class Animate:
-    __time: int = 0
-    __status: int = 0
-    __infinity: bool = True
-    __limit: int = 2
 
+class Animate:
     def __init__(self) -> None:
         self.__delaytime = variables.ANIMATE_DELAYTIME
+        self.__time: int = 0
+        self.__status: int = 0
+        self.__infinity: bool = True
+        self.__limit: int = 2
         pass
 
     def run(self):
@@ -89,7 +92,7 @@ class Animate:
     def status(self, value: int):
         if value >= 0 and value <= 1:
             self.__status = value
-    
+
     def set_infinity(self, value: bool):
         self.__infinity = value
 

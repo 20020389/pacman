@@ -2,23 +2,14 @@
 import pygame
 
 from src.ghost import Ghost
-from src.pacman import Pacman
 from src.interface import Animate, Manager_Method
 import src.variables as variables
 from src.spite import Spite
 from src.text import Text
+from src.pacman import Pacman
 
 
 class GameManager(Manager_Method):
-    __life: int
-    __score: int
-    __pause: bool
-    killing_pacman: bool
-    pacman_dead: bool
-    new_life_pause: Animate
-
-    pacman: Pacman
-    list_ghost: list[Ghost]  # tuple[, Ghost, Ghost, Ghost]
 
     def __init__(self) -> None:
         new_life_pause = Animate()
@@ -36,7 +27,6 @@ class GameManager(Manager_Method):
         self.killing_pacman = False
         self.pacman_dead = False
         self.new_life_pause = new_life_pause
-
         self.pacman = Pacman(self, 13.5, 25)
         self.list_ghost = [ghost_red, ghost_pink, ghost_blue, ghost_yellow]
         pass
