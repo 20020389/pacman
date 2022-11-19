@@ -1,6 +1,6 @@
 ### required
 
--   python, pip
+-   python3, pip
 
 ### install package
 
