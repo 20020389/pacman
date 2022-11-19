@@ -203,8 +203,7 @@ class Pacman(entity.Entity):
         if map_hash[i][j] != 45:
             # kill pacman
             if map_hash[i][j] == 48:
-                self.set_dead(True)
-                self.game_manager.set_killing_pacman(True)
+                self.game_manager.up_score(100)
 
             if map_hash[i][j] == 46:
                 self.game_manager.up_score(10)
@@ -359,3 +358,5 @@ class Pacman(entity.Entity):
 
     def set_dead(self, value: bool):
         self.dead = value
+        if value == True:
+            self.game_manager.set_killing_pacman(True)

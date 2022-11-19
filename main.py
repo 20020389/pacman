@@ -23,15 +23,21 @@ map1 = load_map('map1')
 topbar = Topbar(game_manager)
 
 
-
 while running:
     pygame.time.wait(10)
     screen.fill((0, 0, 0))
     if game_manager.pacman_dead and not game_manager.new_life_pause.isFinish():
         game_manager.new_life_pause.run()
     elif game_manager.pacman_dead and game_manager.new_life_pause.isFinish():
-        if game_manager.life > 1:
+        game_manager.decrease_life()
+        if game_manager.life > 0:
             game_manager.reset_on_dead()
+        if game_manager.lose == True:
+            # new game on life = 0
+            print('new game')
+            game_manager = GameManager()
+            topbar.game_manager = game_manager
+            map1 = load_map('map1')
 
     map1.draw(screen)
     game_manager.draw(screen, map1.map)

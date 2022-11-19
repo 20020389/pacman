@@ -1,6 +1,7 @@
 import random
 import pygame
 
+from src.pacman import Pacman
 import src.entity as entity
 import src.spite as spite
 import src.variables as variables
@@ -89,6 +90,7 @@ class Ghost(entity.Entity):
         self.dead_animate = dead_animate
         self.dead = False
         self.timing = 0
+        self.pacman: Pacman | None = None
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         status = self.animate.status
@@ -229,6 +231,9 @@ class Ghost(entity.Entity):
         x: float = self.x
         y: float = self.y
 
+        if self.pacman != None and self.pacman_inside():
+            self.pacman.set_dead(True)
+
         if self.status == 'left':
             x = self.__move_left(w)
         if self.status == 'right':
@@ -240,7 +245,7 @@ class Ghost(entity.Entity):
             y = self.__move_down(h)
 
         if self.can_move(map_hash, (x, y)):
-            self.eat(map_hash)
+
             if self.running:
                 self.x = x
                 self.y = y
@@ -346,3 +351,22 @@ class Ghost(entity.Entity):
 
     def set_dead(self, value: bool):
         self.dead = value
+
+    def set_pacman(self, pacman: Pacman):
+        self.pacman = pacman
+
+    def pacman_inside(self):
+        is_inside = self.is_inside
+        """
+        pacman
+        """
+        p = self.pacman
+        if not p:
+            return False
+
+        p_topleft: tuple[float, float] = p.x, p.y
+        p_topright: tuple[float, float] = p.x + p.w, p.y
+        p_bottomleft: tuple[float, float] = p.x, p.y + p.h
+        p_bottomright: tuple[float, float] = p.x + p.w, p.y + p.h
+
+        return is_inside(p_topleft) or is_inside(p_topright) or is_inside(p_bottomleft) or is_inside(p_bottomright)

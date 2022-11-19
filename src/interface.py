@@ -1,5 +1,5 @@
 import pygame
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import src.variables as variables
 
 
@@ -14,7 +14,7 @@ class Position:
         return self.x, self.y
 
 
-class Manager_Method:
+class Manager_Method(ABC):
     @abstractmethod
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         pass

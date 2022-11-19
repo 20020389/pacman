@@ -26,14 +26,18 @@ class GameManager(Manager_Method):
         self.__pause = False
         self.killing_pacman = False
         self.pacman_dead = False
+        self.lose = False
         self.new_life_pause = new_life_pause
         self.pacman = Pacman(self, 13.5, 25)
         self.list_ghost = [ghost_red, ghost_pink, ghost_blue, ghost_yellow]
+        for ghost in self.list_ghost:
+            ghost.set_pacman(self.pacman)
         pass
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         for ghost in self.list_ghost:
-            ghost.draw(screen, mapHash)
+            if not self.pacman.dead:
+                ghost.draw(screen, mapHash)
         self.pacman.draw(screen, mapHash)
 
     def handle(self, event: pygame.event.Event):
@@ -42,13 +46,17 @@ class GameManager(Manager_Method):
     def reset_on_dead(self):
         self.pacman = Pacman(self, 13.5, 25)
         self.pacman_dead = False
-        self.decrease_life()
         self.new_life_pause.reset()
         ghost_pink = Ghost(self, (12, 13), 0)
         ghost_red = Ghost(self, (12, 16), 1)
         ghost_blue = Ghost(self, (15, 13), 2)
         ghost_yellow = Ghost(self, (15, 16), 3)
         self.list_ghost = [ghost_red, ghost_pink, ghost_blue, ghost_yellow]
+        for ghost in self.list_ghost:
+            ghost.set_pacman(self.pacman)
+
+    def set_lose(self, value: bool):
+        self.lose = value
 
     def up_score(self, score: int):
         self.__score += score
@@ -62,7 +70,10 @@ class GameManager(Manager_Method):
         return self.__life
 
     def decrease_life(self):
-        self.__life = self.__life - 1
+        life = self.__life - 1
+        if (life == 0):
+            self.set_lose(True)
+        self.__life = life
 
     @property
     def pause(self):
