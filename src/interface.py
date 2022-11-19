@@ -1,5 +1,7 @@
+import typing
 import pygame
 from abc import ABC, abstractmethod
+
 import src.variables as variables
 
 
@@ -33,6 +35,10 @@ class Manager_Method(ABC):
 
     @abstractmethod
     def make_ghostweak(self):
+        pass
+
+    @abstractmethod
+    def get_weakanimate() -> typing.Any:
         pass
 
     @abstractmethod
@@ -111,6 +117,9 @@ class Animate:
 
     def set_delaytime(self, value: int):
         self.__delaytime = value
+
+    def get_delaytime(self):
+        return self.__delaytime
 
     def reset(self):
         self.__status = 0

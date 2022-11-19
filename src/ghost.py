@@ -104,6 +104,7 @@ class Ghost(entity.Entity):
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         status = self.animate.status
         weakness = self.game_manager.is_ghostweak()
+        g_weakanimate: Animate = self.game_manager.get_weakanimate()
 
         if not self.dead:
             if weakness:
@@ -122,6 +123,9 @@ class Ghost(entity.Entity):
         # render
         if not self.dead:
             if not weakness:
+                if self.weak_animate.get_delaytime() == int(variables.ANIMATE_DELAYTIME / 2):
+                    self.weak_animate.set_delaytime(
+                        variables.ANIMATE_DELAYTIME)
                 if self.status == 'left':
                     status += 2
                 if self.status == 'up':
@@ -134,6 +138,9 @@ class Ghost(entity.Entity):
                                            self.y - self.range_y), current_image.get())
                 self.animate.run()
             else:
+                if g_weakanimate.limit - g_weakanimate.status == 2 and self.weak_animate.get_delaytime() == variables.ANIMATE_DELAYTIME:
+                    self.weak_animate.set_delaytime(
+                        int(variables.ANIMATE_DELAYTIME / 2))
                 status = 8 + self.weak_animate.status
 
                 current_image = self.imgs_rect[status]

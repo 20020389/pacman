@@ -24,7 +24,7 @@ class GameManager(Manager_Method):
         g_weakness_animate = Animate()
         g_weakness_animate.set_infinity(False)
         g_weakness_animate.limit = 10
-        g_weakness_animate.set_delaytime(70)
+        g_weakness_animate.set_delaytime(60)
 
         self.__life = 3
         self.__score = 0
@@ -108,6 +108,10 @@ class GameManager(Manager_Method):
 
     def is_ghostweak(self):
         return self.g_weakness
+
+    def get_weakanimate(self) -> Animate:
+        return self.g_weakness_animate
+        pass
 
 
 class Topbar:
