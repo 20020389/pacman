@@ -21,7 +21,6 @@ class Entity:
         self.dead: bool
 
         self.animate: Animate
-        self.dead_animate: Animate
 
         self.surface: pygame.surface.Surface
         pass

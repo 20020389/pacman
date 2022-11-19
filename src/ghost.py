@@ -56,6 +56,16 @@ class Ghost(entity.Entity):
         imgs_rect.append(spite.Spite(running_img_w * 7,
                          ghost_type, running_img_w, running_img_h))  # left 2
 
+        # weak
+        imgs_rect.append(spite.Spite(running_img_w * 0, 4 *
+                         variables.GHOST_SURFACE_H, running_img_w, running_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 1, 4 *
+                         variables.GHOST_SURFACE_H, running_img_w, running_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 2, 4 *
+                         variables.GHOST_SURFACE_H, running_img_w, running_img_h))
+        imgs_rect.append(spite.Spite(running_img_w * 3, 4 *
+                         variables.GHOST_SURFACE_H, running_img_w, running_img_h))
+
         # dead
         # imgs_rect.append(spite.Spite(dead_img_w * 8, 0, dead_img_w, running_img_h))
         imgs_rect.append(spite.Spite(dead_img_w * 0, 5 *
@@ -67,9 +77,8 @@ class Ghost(entity.Entity):
         imgs_rect.append(spite.Spite(dead_img_w * 3, 5 *
                          variables.GHOST_SURFACE_H, dead_img_w, dead_img_h))
 
-        dead_animate = Animate()
-        dead_animate.limit = 11
-        dead_animate.set_infinity(False)
+        weak_animate = Animate()
+        weak_animate.limit = 4
 
         # define
         self.game_manager = manager
@@ -87,44 +96,68 @@ class Ghost(entity.Entity):
         self.action = 'right'
         self.access = [45, 46, 47, 48]
         self.animate = Animate()
-        self.dead_animate = dead_animate
+        self.weak_animate = weak_animate
         self.dead = False
         self.timing = 0
         self.pacman: Pacman | None = None
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
         status = self.animate.status
+        weakness = self.game_manager.is_ghostweak()
 
-        if self.status == 'left':
-            status += 2
-        if self.status == 'up':
-            status += 4
-        if self.status == 'down':
-            status += 6
+        if not self.dead:
+            if weakness:
+                self.speed = variables.GHOST_SPEED / 2.6
+            else:
+                self.speed = variables.GHOST_SPEED
+        else:
+            self.speed = variables.GHOST_SPEED * 2
 
-        current_image = self.imgs_rect[status]
+        if self.pacman != None and self.pacman_inside():
+            if not weakness and not self.dead:
+                self.pacman.set_dead(True)
+            else:
+                self.dead = True
 
         # render
         if not self.dead:
-            screen.blit(self.surface, (self.x - self.range_x,
-                                       self.y - self.range_y), current_image.get())
-            self.__run(screen, mapHash)
+            if not weakness:
+                if self.status == 'left':
+                    status += 2
+                if self.status == 'up':
+                    status += 4
+                if self.status == 'down':
+                    status += 6
+                current_image = self.imgs_rect[status]
 
-        if self.dead and not self.dead_animate.isFinish():
-            status = self.dead_animate.status + 8
+                screen.blit(self.surface, (self.x - self.range_x,
+                                           self.y - self.range_y), current_image.get())
+                self.animate.run()
+            else:
+                status = 8 + self.weak_animate.status
+
+                current_image = self.imgs_rect[status]
+
+                screen.blit(self.surface, (self.x - self.range_x,
+                                           self.y - self.range_y), current_image.get())
+                self.weak_animate.run()
+
+        if self.dead:
+            status = 12
+            if self.status == 'left':
+                status += 1
+            if self.status == 'up':
+                status += 2
+            if self.status == 'down':
+                status += 3
+
             current_image = self.imgs_rect[status]
 
             screen.blit(self.surface, (self.x - self.range_x,
                                        self.y - self.range_y), current_image.get())
-            self.dead_animate.run()
             pass
 
-        elif self.dead and self.dead_animate.isFinish():
-            self.game_manager.set_killing_pacman(False)
-            self.game_manager.set_pacman_dead(True)
-
-        if self.running and not self.dead:
-            self.animate.run()
+        self.__run(screen, mapHash)
 
     def can_move(self, map_hash: list[list[int]],  pos: tuple[float, float]):
         access = self.access
@@ -231,9 +264,6 @@ class Ghost(entity.Entity):
         x: float = self.x
         y: float = self.y
 
-        if self.pacman != None and self.pacman_inside():
-            self.pacman.set_dead(True)
-
         if self.status == 'left':
             x = self.__move_left(w)
         if self.status == 'right':
@@ -252,8 +282,6 @@ class Ghost(entity.Entity):
             else:
                 self.running = True
         else:
-            self.running = False
-            self.animate.status = 1
             self.new_way(screen, map_hash)
 
         if self.same_frame():

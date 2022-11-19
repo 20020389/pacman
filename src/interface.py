@@ -31,6 +31,14 @@ class Manager_Method(ABC):
     def up_score(self, score: int):
         pass
 
+    @abstractmethod
+    def make_ghostweak(self):
+        pass
+
+    @abstractmethod
+    def is_ghostweak(self):
+        pass
+
     @property
     def score(self):
         pass
@@ -50,9 +58,11 @@ class Manager_Method(ABC):
     def pause(self, value: bool):
         pass
 
+    @abstractmethod
     def set_killing_pacman(self, value: bool):
         pass
 
+    @abstractmethod
     def set_pacman_dead(self, value: bool):
         pass
 

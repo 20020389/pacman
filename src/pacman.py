@@ -203,6 +203,7 @@ class Pacman(entity.Entity):
         if map_hash[i][j] != 45:
             # kill pacman
             if map_hash[i][j] == 48:
+                self.game_manager.make_ghostweak()
                 self.game_manager.up_score(100)
 
             if map_hash[i][j] == 46:

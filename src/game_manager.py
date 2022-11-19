@@ -21,6 +21,11 @@ class GameManager(Manager_Method):
         ghost_blue = Ghost(self, (15, 13), 2)
         ghost_yellow = Ghost(self, (15, 16), 3)
 
+        g_weakness_animate = Animate()
+        g_weakness_animate.set_infinity(False)
+        g_weakness_animate.limit = 10
+        g_weakness_animate.set_delaytime(70)
+
         self.__life = 3
         self.__score = 0
         self.__pause = False
@@ -28,6 +33,8 @@ class GameManager(Manager_Method):
         self.pacman_dead = False
         self.lose = False
         self.new_life_pause = new_life_pause
+        self.g_weakness = False
+        self.g_weakness_animate = g_weakness_animate
         self.pacman = Pacman(self, 13.5, 25)
         self.list_ghost = [ghost_red, ghost_pink, ghost_blue, ghost_yellow]
         for ghost in self.list_ghost:
@@ -35,6 +42,12 @@ class GameManager(Manager_Method):
         pass
 
     def draw(self, screen: pygame.surface.Surface, mapHash: list[list[int]] = []):
+        if self.g_weakness == True:
+            self.g_weakness_animate.run()
+        if self.g_weakness_animate.isFinish():
+            self.g_weakness = False
+            self.g_weakness_animate.reset()
+
         for ghost in self.list_ghost:
             if not self.pacman.dead:
                 ghost.draw(screen, mapHash)
@@ -88,6 +101,13 @@ class GameManager(Manager_Method):
 
     def set_pacman_dead(self, value: bool):
         self.pacman_dead = value
+
+    def make_ghostweak(self):
+        self.g_weakness = True
+        self.g_weakness_animate.reset()
+
+    def is_ghostweak(self):
+        return self.g_weakness
 
 
 class Topbar:
